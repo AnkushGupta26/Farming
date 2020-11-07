@@ -3,6 +3,7 @@ package com.example.farming.weather;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Icon;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -67,23 +69,20 @@ public class WeatherActivity extends AppCompatActivity {
             public void onClick(View v) {
                 location = searchView.getQuery().toString();
                 weatherDetail();
-                Log.d("locatioin", location);
-                Log.d("locatioin", "onclick entered");
-            }
-        });
-
-        searchView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                location = searchView.getQuery().toString();
-                weatherDetail();
-                Log.d("locatioin", location);
-                Log.d("locatioin", "onclick entered");
+                hideSoftKeyboard(WeatherActivity.this);
+                searchView.setQuery("", false);
             }
         });
 
     }
 
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(
+                activity.getCurrentFocus().getWindowToken(), 0);
+    }
 
     public void weatherDetail(){
         url = "https://api.openweathermap.org/data/2.5/weather?q=" + location +"&appid=ef07a3da758a5f7d59437c2c23f79743";
@@ -97,8 +96,8 @@ public class WeatherActivity extends AppCompatActivity {
                     JSONObject mainObj = new JSONObject(jsonObject.getString("main"));
                     JSONObject windObj = new JSONObject(jsonObject.getString("wind"));
                     Log.d("location", "location is " + mainObj.getDouble("temp"));
-                    visibility = (int) jsonObject.getDouble("visibility");
-                    visibilityText.setText("Visibility : " + String.valueOf(visibility));
+                    visibility = (int) (jsonObject.getDouble("visibility")/1000);
+                    visibilityText.setText("Visibility : " + String.valueOf(visibility) + "km");
                     temp = (int)(mainObj.getDouble("temp")-273.15);
                     tempText.setText(String.valueOf(temp + "°C"));
                     humidity = (int)mainObj.getDouble("humidity");
