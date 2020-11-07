@@ -68,7 +68,6 @@ public class WeatherActivity extends AppCompatActivity {
                 WeatherDetail.str = "";
                 location = searchView.getQuery().toString();
                 weatherDetail();
-                System.out.println("***************"+location + "*****************************");
                 Log.d("locatioin", location);
                 Log.d("locatioin", "onclick entered");
             }
