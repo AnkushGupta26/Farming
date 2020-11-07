@@ -40,7 +40,7 @@ public class WeatherActivity extends AppCompatActivity {
     int temp, pressure, humidity, maxTemp, minTemp, wind, visibility;
     ImageView iconView, sendView;
     SearchView searchView;
-    String url = "https://api.openweathermap.org/data/2.5/weather?q=" + location +"&appid=ef07a3da758a5f7d59437c2c23f79743";
+    String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,16 @@ public class WeatherActivity extends AppCompatActivity {
         sendView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                WeatherDetail.str = "";
+                location = searchView.getQuery().toString();
+                weatherDetail();
+                Log.d("locatioin", location);
+                Log.d("locatioin", "onclick entered");
+            }
+        });
+
+        searchView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 location = searchView.getQuery().toString();
                 weatherDetail();
                 Log.d("locatioin", location);
@@ -77,6 +86,7 @@ public class WeatherActivity extends AppCompatActivity {
 
 
     public void weatherDetail(){
+        url = "https://api.openweathermap.org/data/2.5/weather?q=" + location +"&appid=ef07a3da758a5f7d59437c2c23f79743";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
@@ -88,25 +98,25 @@ public class WeatherActivity extends AppCompatActivity {
                     JSONObject windObj = new JSONObject(jsonObject.getString("wind"));
                     Log.d("location", "location is " + mainObj.getDouble("temp"));
                     visibility = (int) jsonObject.getDouble("visibility");
-                    visibilityText.append(String.valueOf(visibility));
+                    visibilityText.setText("Visibility : " + String.valueOf(visibility));
                     temp = (int)(mainObj.getDouble("temp")-273.15);
                     tempText.setText(String.valueOf(temp + "°C"));
                     humidity = (int)mainObj.getDouble("humidity");
-                    humidityText.append(String.valueOf(humidity + "%"));
+                    humidityText.setText("Humidity : " + String.valueOf(humidity + "%"));
                     pressure = (int)mainObj.getDouble("pressure");
-                    pressureText.append(String.valueOf(pressure + "hPa"));
+                    pressureText.setText("Pressure : " + String.valueOf(pressure + "hPa"));
                     wind = (int)(windObj.getDouble("speed")*3.6);
-                    windText.append(String.valueOf(wind + "km/h"));
+                    windText.setText("Wind: " + String.valueOf(wind + "km/h"));
                     cloud = weatherObj.getString("description");
-                    cloudText.append(cloud);
+                    cloudText.setText("Cloud : " + cloud);
                     name = jsonObject.getString("name");
                     nameText.setText(name);
                     main = weatherObj.getString("main");
                     mainText.setText(main);
                     minTemp = (int)(mainObj.getDouble("temp_min")-273.15);
-                    minTempText.append(String.valueOf(minTemp + "°C"));
+                    minTempText.setText("Min Temp : " + String.valueOf(minTemp + "°C"));
                     maxTemp = (int)(mainObj.getDouble("temp_max")-273.15);
-                    maxTempText.append(String.valueOf(maxTemp + "°C"));
+                    maxTempText.setText("Max Temp :" + String.valueOf(maxTemp + "°C"));
                     iconUrl = "https://openweathermap.org/img/w/" + weatherObj.getString("icon") + ".png";
                     Picasso.get().load(iconUrl).into(iconView);
 
